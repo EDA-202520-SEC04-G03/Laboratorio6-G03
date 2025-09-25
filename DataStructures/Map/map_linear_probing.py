@@ -1,0 +1,55 @@
+import map_functions as mf
+import DataStructures.List.array_list as lt
+import map_entry as me
+import random
+
+def new_map(num_elements, load_factor, prime=109345121):
+    capacity = mf.next_prime(int(num_elements / load_factor))
+
+    table = lt.new_list()
+    for _ in range(capacity):
+        lt.add_last(table, me.new_map_entry(None, None))
+
+    hash_table = {
+        "prime" : prime,
+        "capacity" : capacity,
+        "scale" : random.randrange(1, prime - 1),
+        "shift" : random.randrange(0, prime - 1),
+        "table" : table,
+        "current_factor" : 0,
+        "limit_factor" : load_factor,
+        "size" : 0
+    }
+
+    return hash_table
+
+def put(my_map, key, value):
+    index = mf.hash_value(my_map, key)
+    capacity = my_map["capacity"]
+    table = my_map["table"]
+
+    for i in range(capacity):
+        probe_index = (index + i) % capacity
+        entry = lt.get_element(table, probe_index)
+        entry_key = me.get_key(entry)
+        if entry_key is None or entry_key == key:
+            lt.change_info(table, probe_index, me.new_map_entry(key, value))
+            if entry_key is None:
+                my_map["size"] += 1
+            return my_map
+
+def contains(my_map, key):
+    index = mf.hash_value(my_map, key)
+    capacity = my_map["capacity"]
+    table = my_map["table"]
+
+    for i in range(capacity):
+        probe_index = (index + i) % capacity
+        entry = lt.get_element(table, probe_index)
+        entry_key = me.get_key(entry)
+        if entry_key is None:
+            return False
+        if entry_key == key:
+            return True
+    return False
+
