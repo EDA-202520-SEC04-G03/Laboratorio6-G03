@@ -26,3 +26,24 @@ def rehash(my_map):
             my_map['entries'][index] = entry
             my_map['size'] += 1
             
+def get(my_map,key):
+    index, found = find_slot(my_map, key, mf.hash_value)
+    if found:
+        return my_map['entries'][index]['value']
+    else:
+        return None
+    
+    
+    
+def remove(my_map,key):
+    index, found = find_slot(my_map, key, mf.hash_value)
+    if found:
+        my_map['entries'][index] = None
+        my_map['size'] -= 1
+        return True
+    else:
+        return False
+    
+def size(my_map):
+    return my_map['size']
+
