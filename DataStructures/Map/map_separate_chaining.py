@@ -1,7 +1,7 @@
-import map_functions as mf
+import DataStructures.Map.map_functions as mf
 import DataStructures.List.single_linked_list as lt
 import DataStructures.List.array_list as al
-import map_entry as me
+import DataStructures.Map.map_entry as me
 import random
 
 
@@ -31,10 +31,10 @@ def contains(my_map, key):
     table = my_map["table"]
 
     bucket = lt.get_element(table, index)
-    size_bucket = lt.size(bucket)
-
     if lt.is_empty(bucket):
         return False
+    size_bucket = lt.size(bucket["value"])
+
     
     for i in range(size_bucket):
         entry = lt.get_element(bucket, i)

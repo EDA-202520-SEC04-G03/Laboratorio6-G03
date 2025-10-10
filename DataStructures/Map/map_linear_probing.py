@@ -1,6 +1,6 @@
-import map_functions as mf
+import DataStructures.Map.map_functions as mf
 import DataStructures.List.array_list as lt
-import map_entry as me
+import DataStructures.Map.map_entry as me
 import random
 
 def new_map(num_elements, load_factor, prime=109345121):
@@ -19,6 +19,7 @@ def new_map(num_elements, load_factor, prime=109345121):
         "current_factor" : 0,
         "limit_factor" : load_factor,
         "size" : 0
+        
     }
 
     return hash_table
@@ -56,33 +57,33 @@ def contains(my_map, key):
 def find_slot(my_map,key,hash_value):
     index = hash_value(my_map,key)
     i = 0
-    while my_map['entries'][(index + i) % my_map['capacity']] is not None:
-        if my_map['entries'][(index + i) % my_map['capacity']]['key'] == key:
+    while my_map['table'][(index + i) % my_map['capacity']] is not None:
+        if my_map['table'][(index + i) % my_map['capacity']]['key'] == key:
             return (index + i) % my_map['capacity'], True
         i += 1
     return (index + i) % my_map['capacity'], False
 
 
 def rehash(my_map):
-    old_entries = my_map['entries']
+    old_table = my_map['table']
     new_capacity = mf.next_prime(2 * my_map['capacity'])
     my_map['capacity'] = new_capacity
     my_map['prime'] = mf.next_prime(new_capacity + 1)
     my_map['scale'] = mf.random.randint(1, my_map['prime'] - 1)
     my_map['shift'] = mf.random.randint(0, my_map['prime'] - 1)
-    my_map['entries'] = [None] * new_capacity
+    my_map['table'] = [None] * new_capacity
     my_map['size'] = 0
 
-    for entry in old_entries:
+    for entry in old_table:
         if entry is not None:
             index, found = find_slot(my_map, entry['key'], mf.hash_value)
-            my_map['entries'][index] = entry
+            my_map['table'][index] = entry
             my_map['size'] += 1
             
 def get(my_map,key):
     index, found = find_slot(my_map, key, mf.hash_value)
     if found:
-        return my_map['entries'][index]['value']
+        return my_map['table'][index]['value']
     else:
         return None
     
@@ -91,7 +92,7 @@ def get(my_map,key):
 def remove(my_map,key):
     index, found = find_slot(my_map, key, mf.hash_value)
     if found:
-        my_map['entries'][index] = None
+        my_map['table'][index] = None
         my_map['size'] -= 1
         return True
     else:
