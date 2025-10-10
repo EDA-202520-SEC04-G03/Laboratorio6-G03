@@ -29,9 +29,11 @@ import csv
 import time
 import tracemalloc
 
-
+import DataStructures.Map.map_linear_probing as lp
 # TODO Realice la importación del mapa linear probing
+import DataStructures.List.array_list as al
 # TODO Realice la importación de ArrayList como estructura de datos auxiliar para sus requerimientos
+import DataStructures.Map.map_separate_chaining as sc
 # TODO Realice la importación del mapa separate chaining
 
 
@@ -82,10 +84,26 @@ def load_data(catalog):
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
+    # Iniciar medición de tiempo
+    start_time = getTime()
+    
+    # Iniciar medición de memoria
+    tracemalloc.start()
+    start_memory = getMemory()
+    
     books, authors = load_books(catalog)
     tag_size = load_tags(catalog)
     book_tag_size = load_books_tags(catalog)
-    return books, authors,tag_size,book_tag_size
+
+    # Detener medición de memoria
+    stop_memory = getMemory()
+    
+    # Calcular medición de tiempo y memoria
+    end_time = getTime()
+    tiempo_transcurrido = deltaTime(end_time, start_time)
+    memoria_usada = deltaMemory(start_memory, stop_memory)
+    
+    return books, authors, tag_size, book_tag_size, tiempo_transcurrido, memoria_usada
 
 
 def load_books(catalog):
@@ -288,6 +306,7 @@ def get_books_by_author_pub_year(catalog, author_name, pub_year):
     
     # TODO Completar la función de consulta
     resultado = None  # Sustituir con la lógica real
+
     
     # Detener medición de memoria
     stop_memory = getMemory()

@@ -26,7 +26,9 @@
 
 import sys
 import App.logic as logic
+import DataStructures.Map.map_linear_probing as mf
 # TODO Realice la importación del mapa linear probing
+import DataStructures.List.array_list as al
 # TODO Realice la importación de ArrayList como estructura de datos auxiliar para sus requerimientos
 
 
@@ -52,8 +54,8 @@ def load_data(control):
     """
     Solicita a la controlador que cargue los datos
     """
-    books, authors, tags, book_tags = logic.load_data(control)
-    return books, authors, tags, book_tags
+    books, authors, tags, book_tags, tiempo_transcurrido, memoria_usada = logic.load_data(control)
+    return books, authors, tags, book_tags, tiempo_transcurrido, memoria_usada
 
 #  -------------------------------------------------------------
 # Funciones para la correcta impresión de los datos
@@ -151,12 +153,13 @@ def main():
         # TODO agregar tiempo de ejecución y consumo de memoria
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
-            bk, at, tg, bktg = load_data(control)
+            bk, at, tg, bktg, tt, mu = load_data(control)
             print('Libros cargados: ' + str(bk))
             print('Autores cargados: ' + str(at))
             print('Géneros cargados: ' + str(tg))
-            print('Asociación de Géneros a Libros cargados: ' +
-                  str(bktg))
+            print('Asociación de Géneros a Libros cargados: ' + str(bktg))
+            print(f"Tiempo de carga: {tt:.2f} ms")
+            print(f"Memoria utilizada: {mu:.2f} kB")
 
         elif int(inputs[0]) == 2:
             number = input("Ingrese el id del libro (good_read_book_id) que desea buscar: ")

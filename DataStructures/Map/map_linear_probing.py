@@ -113,3 +113,7 @@ def key_set(my_map):
         if entry is not None and entry['key'] is not None:
             lt.addLast(keys, entry['key'])
     return keys    
+
+def is_empty(my_map):
+    return my_map["size"] == 0
+
