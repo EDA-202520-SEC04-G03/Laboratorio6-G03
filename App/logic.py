@@ -264,16 +264,14 @@ def get_book_info_by_book_id(catalog, good_reads_book_id):
     """
     Retorna toda la informacion que se tenga almacenada de un libro según su good_reads_id.
     """
-    #TODO Completar función de consulta
-    pass
+    return lp.get(catalog['books_by_id'], good_reads_book_id)
 
 
 def get_books_by_author(catalog, author_name):
     """
     Retorna los libros asociado al autor ingresado por párametro
     """
-    #TODO Completar función de consulta
-    pass
+    return lp.get(catalog['books_by_authors'], author_name)
 
 
 def get_books_by_tag(catalog, tag_name):
@@ -284,19 +282,13 @@ def get_books_by_tag(catalog, tag_name):
     set de datos de book_tags y obtener más información.
     - Teniendo el tag_id, se puede obtener el goodreads_book_id de la estructura que contiene los datos 
     de book_tags y finalmente relacionarlo con los datos completos del libro.
-
     """
-
-    t = new_book_tag(book_tag['tag_id'], book_tag['goodreads_book_id'], book_tag['count'])
-    tag_id = t['tag_id']
-    existing = lp.get(catalog['book_tags'], tag_id)
-    if existing:
-        al.add_last(existing, t)
-    else:
-        lst = al.new_list()
-        al.add_last(lst, t)
-        lp.put(catalog['book_tags'], tag_id, lst)
-    return catalog
+    tag = lp.get(catalog['tags'], tag_name)
+    if not tag:
+        return None
+    tag_id = tag['tag_id']
+    books_list = lp.get(catalog['book_tags'], tag_id)
+    return books_list
 
 
 def get_books_by_author_pub_year(catalog, author_name, pub_year):
