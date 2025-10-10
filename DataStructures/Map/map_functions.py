@@ -1,4 +1,16 @@
 import math
+import random as _rnd
+
+def random():
+    return _rnd.random()
+
+def randrange(start, stop=None):
+    if stop is None:
+        return _rnd.randrange(start)
+    return _rnd.randrange(start, stop)
+
+def randint(a, b):
+    return _rnd.randint(a, b)
 
 """
     Funciones auxiliares para el manejo de tablas de simbolos (**mapas**)
