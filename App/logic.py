@@ -201,6 +201,8 @@ def add_book_author_and_year(catalog, author_name, book):
     """
     books_by_year_author = catalog['books_by_year_author']
     pub_year = book['original_publication_year']
+    if not pub_year or pub_year == "":
+        pub_year = "N/A" 
     #Si el año de publicación está vacío se reemplaza por un valor simbolico
     #TODO Completar manejo de los escenarios donde el año de publicación es vacío.
     author_value = lp.get(books_by_year_author,author_name)
@@ -214,7 +216,14 @@ def add_book_author_and_year(catalog, author_name, book):
             pub_year_map = lp.new_map(1000,0.7)
             lp.put(pub_year_map,pub_year,book)
     else:
-        pass # TODO Completar escenario donde no se había agregado el autor al mapa principal
+        # TODO Completar escenario donde no se había agregado el autor al mapa principal
+        # Se eligio 1000 y 0.7 porque Es un valor estándar y suficientemente grande para la gran
+        # mayoria de situaciones y 0.7 es un factor de carga bueno para el problema
+        year_map = lp.new_map(1000, 0.7)
+        books = al.new_list()
+        al.add_last(books, book)
+        lp.put(year_map, pub_year, books)
+        lp.put(books_by_year_author, author_name, year_map)
     return catalog
 
 
@@ -241,7 +250,10 @@ def add_book_tag(catalog, book_tag):
         book_tag_list = lp.get(catalog['book_tags'],t['tag_id'])
         al.add_last(book_tag_list,book_tag)
     else:
-        pass #TODO Completar escenario donde el book_tag no se había agregado al mapa   
+        new_list = al.new_list()
+        al.add_last(new_list, book_tag)
+        lp.put(catalog['book_tags'], t['tag_id'], new_list)
+        #TODO Completar escenario donde el book_tag no se había agregado al mapa   
     return catalog
 
 #  -------------------------------------------------------------
@@ -301,8 +313,17 @@ def get_books_by_author_pub_year(catalog, author_name, pub_year):
     start_memory = getMemory()
     
     # TODO Completar la función de consulta
-    resultado = None  # Sustituir con la lógica real
-
+    # Acá se obtiene el mapa de años de publicación para el autor
+    author_map = lp.get(catalog['books_by_year_author'], author_name)
+    if author_map:
+        # Acá se obtiene la lista de libros para el año de publicación
+        books_list = lp.get(author_map, pub_year)
+        if books_list:
+            resultado = books_list
+        else:
+            resultado = None
+    else:
+        resultado = None
     
     # Detener medición de memoria
     stop_memory = getMemory()
