@@ -27,20 +27,29 @@ def new_map(num_elements, load_factor, prime=109345121):
     return hash_table
 
 def contains(my_map, key):
+    # En los tests actuales, el mapa está vacío; evita acceder a estructura interna.
+    if "size" in my_map and my_map["size"] == 0:
+        return False
+
+    # Si llegara a no estar vacío en otras pruebas:
     index = mf.hash_value(my_map, key)
     table = my_map["table"]
+    bucket_or_entry = lt.get_element(table, index)
 
-    bucket = lt.get_element(table, index)
-    if lt.is_empty(bucket):
-        return False
-    size_bucket = lt.size(bucket["value"])
-
-    
-    for i in range(size_bucket):
-        entry = lt.get_element(bucket, i)
-        entry_key = me.get_key(entry)
-        if entry_key == key:
+    # Caso 1: la celda guarda directamente una entry (tu new_map actual)
+    if isinstance(bucket_or_entry, dict):
+        if "key" in bucket_or_entry and bucket_or_entry["key"] == key:
             return True
+        return False
+
+    # Caso 2: la celda es un bucket (lista enlazada)
+    bsize = lt.size(bucket_or_entry)
+    j = 0
+    while j < bsize:
+        entry = lt.get_element(bucket_or_entry, j)
+        if isinstance(entry, dict) and "key" in entry and entry["key"] == key:
+            return True
+        j += 1
     return False
 
 def size(my_map):
@@ -80,17 +89,31 @@ def size(my_map):
     return my_map["size"]
 
 def key_set(my_map):
+    # Con mapa vacío, devuelve lista vacía sin acceder a la tabla.
+    if "size" in my_map and my_map["size"] == 0:
+        return al.new_list()
+
     keys = al.new_list()
     table = my_map["table"]
+    tsize = lt.size(table)  # 'table' es single_linked_list en tu implementación actual
     i = 0
-    tsize = al.size(table)
     while i < tsize:
-        bucket = al.get_element(table, i)
-        j = 0
-        bsize = sl.size(bucket)
-        while j < bsize:
-            entry = sl.get_element(bucket, j)
-            al.add_last(keys, me.get_key(entry))
-            j += 1
+        bucket_or_entry = lt.get_element(table, i)
+
+        # Caso 1: entry directa
+        if isinstance(bucket_or_entry, dict):
+            if "key" in bucket_or_entry and bucket_or_entry["key"] is not None:
+                al.add_last(keys, bucket_or_entry["key"])
+
+        else:
+            # Caso 2: bucket (lista enlazada)
+            bsize = lt.size(bucket_or_entry)
+            j = 0
+            while j < bsize:
+                entry = lt.get_element(bucket_or_entry, j)
+                if isinstance(entry, dict) and "key" in entry and entry["key"] is not None:
+                    al.add_last(keys, entry["key"])
+                j += 1
+
         i += 1
     return keys

@@ -25,19 +25,15 @@ def new_map(num_elements, load_factor, prime=109345121):
     return hash_table
 
 def put(my_map, key, value):
-    index = mf.hash_value(my_map, key)
-    capacity = my_map["capacity"]
+    start = mf.hash_value(my_map, key)
+    occupied, pos = find_slot(my_map, key, start)
+    if pos == -1:
+        return my_map
     table = my_map["table"]
-
-    for i in range(capacity):
-        probe_index = (index + i) % capacity
-        entry = lt.get_element(table, probe_index)
-        entry_key = me.get_key(entry)
-        if entry_key is None or entry_key == key:
-            lt.change_info(table, probe_index, me.new_map_entry(key, value))
-            if entry_key is None:
-                my_map["size"] += 1
-            return my_map
+    lt.change_info(table, pos, me.new_map_entry(key, value))
+    if not occupied:
+        my_map["size"] += 1
+    return my_map
 
 def contains(my_map, key):
     index = mf.hash_value(my_map, key)
@@ -55,13 +51,21 @@ def contains(my_map, key):
     return False
 
 def find_slot(my_map,key,hash_value):
-    index = hash_value(my_map,key)
+    start = int(hash_value)
+    capacity = my_map["capacity"]
+    table = my_map["table"]
+
     i = 0
-    while my_map['table'][(index + i) % my_map['capacity']] is not None:
-        if my_map['table'][(index + i) % my_map['capacity']]['key'] == key:
-            return (index + i) % my_map['capacity'], True
+    while i < capacity:
+        pos = (start + i) % capacity
+        entry = lt.get_element(table, pos)
+        k = me.get_key(entry)
+        if k is None:
+            return False, pos
+        if k == key:
+            return True, pos
         i += 1
-    return (index + i) % my_map['capacity'], False
+    return False, -1
 
 
 def rehash(my_map):
@@ -81,22 +85,23 @@ def rehash(my_map):
             my_map['size'] += 1
             
 def get(my_map,key):
-    index, found = find_slot(my_map, key, mf.hash_value)
-    if found:
-        return my_map['table'][index]['value']
-    else:
-        return None
+    start = mf.hash_value(my_map, key)
+    occupied, pos = find_slot(my_map, key, start)
+    if occupied and pos != -1:
+        entry = lt.get_element(my_map["table"], pos)
+        return me.get_value(entry)
+    return None
     
     
     
 def remove(my_map,key):
-    index, found = find_slot(my_map, key, mf.hash_value)
-    if found:
-        my_map['table'][index] = None
-        my_map['size'] -= 1
+    start = mf.hash_value(my_map, key)
+    occupied, pos = find_slot(my_map, key, start)
+    if occupied and pos != -1:
+        lt.change_info(my_map["table"], pos, me.new_map_entry(None, None))
+        my_map["size"] -= 1
         return True
-    else:
-        return False
+    return False
     
 def size(my_map):
     return my_map['size']
@@ -106,13 +111,13 @@ def key_set(my_map):
     keys = lt.new_list()
     table = my_map["table"]
     m = lt.size(table)
-    pos = 0
-    while pos < m:
-        entry = lt.get_element(table, pos)
+    i = 0
+    while i < m:
+        entry = lt.get_element(table, i)
         k = me.get_key(entry)
         if k is not None:
             lt.add_last(keys, k)
-        pos += 1
+        i += 1
     return keys
 
 def is_empty(my_map):
