@@ -45,33 +45,20 @@ def new_logic():
     los libros y utiliza tablas de hash para almacenar los datos restantes con diferentes índices
     utilizando linear probing como tipo de tabla de hash
     """
-    catalog = {"books": None,
-               "books_by_id": None,
-               "books_by_year_author":None,
-               "books_by_authors": None,
-               "tags": None,
-               "book_tags": None}
-
-    #Lista que contiene la totalidad de los libros cargados
-    catalog['books'] = al.new_list()
-
-    #Tabla de Hash que contiene los libros indexados por good_reads_book_id  
-    #(good_read_id -> book)
-    catalog['books_by_id'] = None #TODO completar la creación del mapa
-
-    #Tabla de Hash con la siguiente pareja llave valor: (author_name -> List(books))
-    catalog['books_by_authors'] = None #TODO completar la creación del mapa
-
-    #Tabla de Hash con la siguiente pareja llave valor: (tag_name -> tag)
-    catalog['tags'] = None #TODO completar la creación del mapa
-
-    #Tabla de Hash con la siguiente pareja llave valor: (tag_id -> book_tags)
-    catalog['book_tags'] = lp.new_map(1000,0.7)
-
-    #Tabla de Hash principal que contiene sub-mapas dentro de los valores
-    #con la siguiente representación de la pareja llave valor: (author_name -> (original_publication_year -> list(books)))
-    catalog['books_by_year_author'] = None #TODO completar la creación del mapa
-    
+    catalog = {
+        "books": None,
+        "books_by_id": None,
+        "books_by_year_author": None,
+        "books_by_authors": None,
+        "tags": None,
+        "book_tags": None
+    }
+    catalog["books"] = al.new_list()
+    catalog["books_by_id"] = lp.new_map(50000, 0.7)
+    catalog["books_by_authors"] = lp.new_map(20000, 0.7)
+    catalog["tags"] = lp.new_map(10000, 0.7)
+    catalog["book_tags"] = lp.new_map(30000, 0.7)
+    catalog["books_by_year_author"] = lp.new_map(20000, 0.7)
     return catalog
 
 #  -------------------------------------------------------------
@@ -287,8 +274,17 @@ def get_books_by_tag(catalog, tag_name):
     de book_tags y finalmente relacionarlo con los datos completos del libro.
 
     """
-    #TODO Completar función de consulta
-    pass
+
+    t = new_book_tag(book_tag['tag_id'], book_tag['goodreads_book_id'], book_tag['count'])
+    tag_id = t['tag_id']
+    existing = lp.get(catalog['book_tags'], tag_id)
+    if existing:
+        al.add_last(existing, t)
+    else:
+        lst = al.new_list()
+        al.add_last(lst, t)
+        lp.put(catalog['book_tags'], tag_id, lst)
+    return catalog
 
 
 def get_books_by_author_pub_year(catalog, author_name, pub_year):

@@ -61,3 +61,36 @@ def value_set(my_map):
                 entry = lt.get_element(bucket, i)            
                 al.add_last(keys, entry["value"])
     return keys
+
+def get(my_map, key):
+    idx = _index(my_map, key)
+    bucket = al.get_element(my_map["table"], idx)
+    pos = 0
+    while pos < sl.size(bucket):
+        entry = sl.get_element(bucket, pos)
+        if me.get_key(entry) == key:
+            return me.get_value(entry)
+        pos += 1
+    return None
+
+def is_empty(my_map):
+    return my_map["size"] == 0
+
+def size(my_map):
+    return my_map["size"]
+
+def key_set(my_map):
+    keys = al.new_list()
+    table = my_map["table"]
+    i = 0
+    tsize = al.size(table)
+    while i < tsize:
+        bucket = al.get_element(table, i)
+        j = 0
+        bsize = sl.size(bucket)
+        while j < bsize:
+            entry = sl.get_element(bucket, j)
+            al.add_last(keys, me.get_key(entry))
+            j += 1
+        i += 1
+    return keys

@@ -101,18 +101,18 @@ def size(my_map):
     return my_map['size']
 
 def key_set(my_map):
-    """
-    Retorna un array_list con las llaves presentes en la tabla linear probing.
-    """
-    keys = lt.newList('ARRAY_LIST')
-    table = my_map['table']
-    m = lt.size(table)
 
-    for pos in range(1, m + 1):
-        entry = lt.getElement(table, pos)            
-        if entry is not None and entry['key'] is not None:
-            lt.addLast(keys, entry['key'])
-    return keys    
+    keys = lt.new_list()
+    table = my_map["table"]
+    m = lt.size(table)
+    pos = 0
+    while pos < m:
+        entry = lt.get_element(table, pos)
+        k = me.get_key(entry)
+        if k is not None:
+            lt.add_last(keys, k)
+        pos += 1
+    return keys
 
 def is_empty(my_map):
     return my_map["size"] == 0
