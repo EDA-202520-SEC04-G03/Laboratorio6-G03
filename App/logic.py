@@ -99,7 +99,7 @@ def load_books(catalog):
     cada uno de ellos, se crea en la lista de autores, a dicho autor y una
     referencia al libro que se esta procesando.
     """
-    booksfile = data_dir + "books.csv"
+    booksfile = data_dir + "books-small.csv"
     input_file = csv.DictReader(open(booksfile, encoding='utf-8'))
     for book in input_file:
         add_book(catalog, book)
@@ -121,7 +121,7 @@ def load_books_tags(catalog):
     """
     Carga la información que asocia tags con libros.
     """
-    bookstagsfile = data_dir +"book_tags.csv"
+    bookstagsfile = data_dir +"book_tags-small.csv"
     input_file = csv.DictReader(open(bookstagsfile, encoding='utf-8'))
     for booktag in input_file:
         add_book_tag(catalog, booktag)
@@ -213,12 +213,9 @@ def add_book_author_and_year(catalog, author_name, book):
         else:
             books = al.new_list()
             al.add_last(books, book)
-            pub_year_map = lp.new_map(1000,0.7)
+            pub_year_map = lp.new_map(1000, 0.7)
             lp.put(pub_year_map,pub_year,book)
     else:
-        # TODO Completar escenario donde no se había agregado el autor al mapa principal
-        # Se eligio 1000 y 0.7 porque Es un valor estándar y suficientemente grande para la gran
-        # mayoria de situaciones y 0.7 es un factor de carga bueno para el problema
         year_map = lp.new_map(1000, 0.7)
         books = al.new_list()
         al.add_last(books, book)
@@ -271,7 +268,8 @@ def get_books_by_author(catalog, author_name):
     """
     Retorna los libros asociado al autor ingresado por párametro
     """
-    return lp.get(catalog['books_by_authors'], author_name)
+    books = lp.get(catalog['books_by_authors'], author_name)
+    return author_name, books
 
 
 def get_books_by_tag(catalog, tag_name):
